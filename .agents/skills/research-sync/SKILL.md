@@ -1,13 +1,26 @@
 ---
 name: research-sync
-description: Summarize one team member's current research, notes, files, and AI conversation into a structured contest research note, preserve sources, avoid duplication, and prepare the result for the shared project_ever repository.
+description: Summarize one team member's current research, notes, files, and AI conversation into a structured contest research note, preserve sources, avoid duplication, and save the result to that member's assigned branch in the shared project_ever repository.
 ---
 
 # Research Sync
 
 ## Goal
 
-현재 사용자의 조사 결과와 AI 대화를 공모전 의사결정에 바로 활용 가능한 Research Note로 변환함.
+현재 사용자의 조사 결과와 AI 대화를 공모전 의사결정에 바로 활용 가능한 Research Note로 변환하고, 반드시 지정된 개인 브랜치에 우선 저장함.
+
+## Assigned member branches
+
+팀 작업 브랜치는 아래 4개만 사용함.
+
+- `wh`
+- `hj`
+- `gb`
+- `hg`
+
+Research Note를 `main`에 직접 저장하지 않음.
+사용자의 개인 브랜치를 현재 대화나 작업 환경에서 확인할 수 없으면 `wh`, `hj`, `gb`, `hg` 중 어느 브랜치를 사용할지 먼저 확인함.
+임의로 브랜치를 추정하지 않음.
 
 ## Trigger examples
 
@@ -30,8 +43,12 @@ description: Summarize one team member's current research, notes, files, and AI 
 
 ## Workflow
 
-1. 현재 조사 주제를 한 문장으로 정의함.
-2. 관련 자료에서 다음 요소 추출함.
+1. 작업자의 개인 브랜치를 확인함.
+   - 허용 브랜치: `wh`, `hj`, `gb`, `hg`
+   - 확인 불가 시 사용자에게 브랜치 선택을 요청하고 쓰기 작업을 중단함.
+2. 대상 브랜치의 최신 내용을 기준으로 작업함.
+3. 현재 조사 주제를 한 문장으로 정의함.
+4. 관련 자료에서 다음 요소 추출함.
    - 핵심 발견
    - 근거/출처
    - 아이디어
@@ -39,25 +56,37 @@ description: Summarize one team member's current research, notes, files, and AI 
    - 리스크
    - 반론 또는 한계
    - 추가 조사 필요 항목
-3. 저장소의 기존 `research/`, `ideas/`, `synthesis/current-summary.md`를 확인함.
-4. 의미상 동일한 내용이 이미 있으면 중복 기록하지 않고 차이점/보강점만 기록함.
-5. 사실과 의견을 분리함.
-6. 적절한 주 축을 선택함.
+5. 대상 브랜치와 `main`의 기존 `research/`, `ideas/`, `synthesis/current-summary.md`를 확인함.
+6. 의미상 동일한 내용이 이미 있으면 중복 기록하지 않고 차이점/보강점만 기록함.
+7. 사실과 의견을 분리함.
+8. 적절한 주 축을 선택함.
    - revenue
    - gamification
    - concierge
    - infrastructure
    - general
-7. Markdown Research Note 생성함.
-8. 사용자의 GitHub ID를 확인할 수 있으면 `research/<github-id>/` 사용함. 확인 불가 시 사용자에게 ID를 요청하거나 `research/unassigned/`를 사용하지 말고 작업을 중단함.
-9. 파일명은 `YYYY-MM-DD-<short-topic>.md` 형식 사용함.
-10. GitHub 쓰기 권한이 있다면 개인 브랜치 생성 후 파일 저장과 PR 생성을 우선함. 직접 main 수정은 사용자가 명시적으로 요청한 경우에만 수행함.
+9. Markdown Research Note 생성함.
+10. 작성자 식별자는 우선 개인 브랜치명을 사용함.
+    - 예: `research/wh/`, `research/hj/`, `research/gb/`, `research/hg/`
+11. 파일명은 `YYYY-MM-DD-<short-topic>.md` 형식 사용함.
+12. 생성/수정 파일은 반드시 확인된 개인 브랜치에 commit함.
+13. `main` merge 또는 PR 생성은 별도 요청이 있을 때만 수행함.
+
+## Branch safety rules
+
+- `main` 직접 commit 금지.
+- 다른 팀원의 개인 브랜치 수정 금지.
+- 개인 브랜치가 확인되기 전 파일 생성/수정 금지.
+- 기존 개인 브랜치를 사용하며 매 작업마다 새로운 브랜치를 만들지 않음.
+- 공용 문서 반영이 필요해도 우선 개인 브랜치에서 수정함.
+- 이후 검토/통합 단계에서만 `main`으로 PR 또는 merge함.
 
 ## Output template
 
 ```md
 ---
-author: <github-id>
+author: <wh|hj|gb|hg>
+branch: <wh|hj|gb|hg>
 date: YYYY-MM-DD
 topic: <topic>
 category: <revenue|gamification|concierge|infrastructure|general>
@@ -117,8 +146,9 @@ status: research
 
 작업 후 사용자에게 다음만 간단히 보고함.
 
+- 저장한 개인 브랜치
 - 생성/수정한 파일
 - 분류한 카테고리
 - 중복 처리 여부
-- PR을 생성했다면 PR 번호
 - 추가 조사 필요 항목 수
+- PR/merge는 수행하지 않았는지 여부
